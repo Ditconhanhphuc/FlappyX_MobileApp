@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flame/components.dart';
+import 'package:flappy_x/component/hidden_coin.dart';
 import 'package:flappy_x/component/pipe.dart';
 
 class PipePair extends PositionComponent {
@@ -23,6 +24,9 @@ class PipePair extends PositionComponent {
       Pipe(
         isFlipped: true,
         position: Vector2(0, -(gap / 2)),
+      ),
+      HiddenCoin(
+        position: Vector2(30, 0),
       ),
     ]);
   }

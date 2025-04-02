@@ -8,7 +8,8 @@ import 'package:flutter/services.dart';
 import 'component/dash.dart';
 import 'component/dash_parallax_background.dart';
 
-class FlappyDashGame extends FlameGame<FlappyDashWorld> with KeyboardEvents {
+class FlappyDashGame extends FlameGame<FlappyDashWorld>
+    with KeyboardEvents, HasCollisionDetection {
   FlappyDashGame()
       : super(
           world: FlappyDashWorld(),
@@ -35,19 +36,27 @@ class FlappyDashGame extends FlameGame<FlappyDashWorld> with KeyboardEvents {
   }
 }
 
-class FlappyDashWorld extends World with TapCallbacks, HasGameRef<FlappyDashGame> {
+class FlappyDashWorld extends World
+    with TapCallbacks, HasGameRef<FlappyDashGame> {
   late Dash _dash;
   late PipePair _lastPipe;
-  static const double _pipeDistance = 400.0;
+  static const _pipesDistance = 400.0;
+  int _score = 0;
+  late TextComponent _scoreText;
 
   @override
   void onLoad() {
     super.onLoad();
     add(DashParallaxBackground());
     add(_dash = Dash());
-
     _generatePipes(
       fromX: 350,
+    );
+    game.camera.viewfinder.add(
+      _scoreText = TextComponent(
+        text: _score.toString(),
+        position: Vector2(0, -(game.size.y / 2)),
+      ),
     );
   }
 
@@ -58,18 +67,16 @@ class FlappyDashWorld extends World with TapCallbacks, HasGameRef<FlappyDashGame
     for (int i = 0; i < count; i++) {
       const area = 600;
       final y = (Random().nextDouble() * area) - (area / 2);
-      add(
-        _lastPipe = PipePair(
-          position: Vector2(fromX + i * _pipeDistance, y),
-        ),
-      );
+      add(_lastPipe = PipePair(
+        position: Vector2(fromX + (i * _pipesDistance), y),
+      ));
     }
   }
 
   void _removePipes() {
     final pipes = children.whereType<PipePair>();
     final shouldBeRemoved = max(pipes.length - 5, 0);
-    pipes.take(shouldBeRemoved).forEach((pipe){
+    pipes.take(shouldBeRemoved).forEach((pipe) {
       pipe.removeFromParent();
     });
   }
@@ -84,12 +91,17 @@ class FlappyDashWorld extends World with TapCallbacks, HasGameRef<FlappyDashGame
     _dash.jump();
   }
 
+  void increaseScore() {
+    _score += 1;
+  }
+
   @override
   void update(double dt) {
     super.update(dt);
+    _scoreText.text = _score.toString();
     if (_dash.x >= _lastPipe.x) {
       _generatePipes(
-        fromX: _pipeDistance,
+        fromX: _pipesDistance,
       );
       _removePipes();
     }
