@@ -12,7 +12,7 @@ class Pipe extends PositionComponent {
   Pipe({
     required this.isFlipped,
     required super.position,
-  });
+  }): super(priority: 2);
 
   @override
   Future<void> onLoad() async {
@@ -25,13 +25,13 @@ class Pipe extends PositionComponent {
     if (isFlipped) {
       flipVertically();
     }
+
     add(RectangleHitbox());
   }
 
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-
     _pipeSprite.render(
       canvas,
       position: Vector2.zero(),
