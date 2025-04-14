@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 class Pipe extends PositionComponent {
@@ -11,11 +12,10 @@ class Pipe extends PositionComponent {
   Pipe({
     required this.isFlipped,
     required super.position,
-  });
+  }): super(priority: 2);
 
   @override
   Future<void> onLoad() async {
-    // TODO: implement onLoad
     await super.onLoad();
     _pipeSprite = await Sprite.load('pipe.png');
     anchor = Anchor.topCenter;
@@ -25,13 +25,13 @@ class Pipe extends PositionComponent {
     if (isFlipped) {
       flipVertically();
     }
+
+    add(RectangleHitbox());
   }
 
   @override
   void render(Canvas canvas) {
-    // TODO: implement render
     super.render(canvas);
-
     _pipeSprite.render(
       canvas,
       position: Vector2.zero(),
